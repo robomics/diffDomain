@@ -17,30 +17,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def finftypes(filepath):
-    """
-    filepath can be stdin, normal txt, and gz file
-    """
-    if(filepath == 'stdin'):
-        fin = sys.stdin
-    elif(filepath[-3:] == '.gz'):
-        fin = gzip.open(filepath)
-    else:
-        fin = open(filepath,'r')
-    return fin
-
-
 def loadtads(inpath, sep, chrnum, reso, min_nbin): # SyntaxError:non-default argument follows dafault argument
-    tadb = []
-    fin = finftypes(inpath)
-    next(fin)
-    for line in fin:
-        #col = line.rstrip().split(sep)
-        col = line.rstrip().split(sep)
-        tadb.append(col[:3])
-    fin.close()
-
-    tadb = pd.DataFrame(tadb)
+    tadb = pd.read_table(inpath, sep=sep, names=[0, 1, 2], usecols=[0, 1, 2])
     tadb.iloc[:,1:3] = tadb.iloc[:,1:3].astype(int)
 
 #     format the chromosomal names
