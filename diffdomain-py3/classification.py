@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # all domains
 # merge/split common boundary x = max(3bin,0.1 TAD Length)
 # region < agrs.remote

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Test if one domain is significantly rewried in another biological condition
 Usage:
