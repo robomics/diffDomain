@@ -27,12 +27,13 @@ parser.add_argument('-s1','--skip1',type=int,default=0,help='to skip the sth row
 parser.add_argument('-s2','--skip2',type=int,default=0,help='to skip the sth rows in the other tadlist file')
 parser.add_argument('--sep1',type=str,default='\t',help="the seperator of the diffdoamin's outcome (like ',')")
 parser.add_argument('--sep2',type=str,default='\t',help="the seperator of the other tadlist")
+parser.add_argument('--cutoff',type=float,default=0.05,help="significance cutoff")
 args = parser.parse_args()
 
 # load the files
 
-data = pd.read_table(args.diff,skiprows=range(args.skip1),sep=args.sep1)
-tad = pd.read_table(args.tad,skiprows=range(args.skip2),sep=args.sep2)
+data = pd.read_table(args.diff,comment='#',sep=args.sep1)
+tad = pd.read_table(args.tad,comment='#',sep=args.sep2)
 # print(data)
 #preprocessing
 cols = data.columns
@@ -40,10 +41,10 @@ data.rename(columns={cols[0]:'chr',cols[1]:'start',cols[2]:'end'},inplace=True,e
 tad = tad.iloc[:,0:3]
 tad.columns = ['chr','start','end']
 
-data['chr'] = [str(i).replace('chr','').strip() for i in data['chr']]
-tad['chr'] = [str(i).replace('chr','').strip() for i in tad['chr']]
+#data['chr'] = [str(i).replace('chr','').strip() for i in data['chr']]
+#tad['chr'] = [str(i).replace('chr','').strip() for i in tad['chr']]
 
-data_diff = data.loc[data['adj_pvalue']<0.05,['chr','start','end']]
+data_diff = data.loc[data['adj_pvalue']<args.cutoff,['chr','start','end']]
 data_diff['significant'] = 1 
 data_diff.reset_index(inplace=True,drop=True)
 
