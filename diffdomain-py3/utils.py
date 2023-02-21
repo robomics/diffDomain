@@ -4,6 +4,7 @@
 from collections import defaultdict
 import numpy as np
 import hicstraw as straw
+import cooler
 import TracyWidom as tw
 import gzip
 import pandas as pd
@@ -82,6 +83,11 @@ def compute_nbins(start, end, reso):
     return nb
 
 
+def contact_matrix_from_cooler(chrn: str, start: int, end: int, fcool: cooler.Cooler, hicnorm: str) -> np.ndarray:
+    if hicnorm.lower() == "none":
+        hicnorm = False
+    query = f"{chrn}:{start}-{end}"
+    return cooler.Cooler(fcool).matrix(balance=hicnorm).fetch(query)
 
 
 def contact_matrix_from_hic(chrn, start, end, reso, fhic, hicnorm):
@@ -160,6 +166,12 @@ def contact_matrix_from_hic(chrn, start, end, reso, fhic, hicnorm):
                 mat[l, k] = el[2][i]
 
         return mat
+
+
+def query_contact_matrix(chrn, start, end, reso, matrix_file, hicnorm):
+    if cooler.fileops.is_cooler(matrix_file):
+        return contact_matrix_from_cooler(chrn, start, end, matrix_file, hicnorm)
+    return contact_matrix_from_hic(chrn, start, end, reso, matrix_file, hicnorm)
 
 
 def extractKdiagonalCsrMatrix(spsCsrMat):
@@ -273,14 +285,14 @@ def twtest_formula(Mat):
 
 def visualization(chrn, start, end, reso, hicnorm, fhic0, fhic1):
 
-        mat0 = contact_matrix_from_hic(chrn, start, end, reso, fhic0, hicnorm)
-        mat1 = contact_matrix_from_hic(chrn, start, end, reso, fhic1, hicnorm)
+        mat0 = query_contact_matrix(chrn, start, end, reso, fhic0, hicnorm)
+        mat1 = query_contact_matrix(chrn, start, end, reso, fhic1, hicnorm)
         return mat0,mat1
 
 
 def comp2domins_by_twtest(chrn, start, end, reso, hicnorm, fhic0, fhic1, min_nbin, f):
-        mat0 = contact_matrix_from_hic(chrn, start, end, reso, fhic0, hicnorm)
-        mat1 = contact_matrix_from_hic(chrn, start, end, reso, fhic1, hicnorm)
+        mat0 = query_contact_matrix(chrn, start, end, reso, fhic0, hicnorm)
+        mat1 = query_contact_matrix(chrn, start, end, reso, fhic1, hicnorm)
 
         if not mat0 is None and not mat1 is None:
             # rlmove rows that have more than half np.nan
