@@ -21,7 +21,7 @@ parser.add_argument('-t','--tad',type=str, default=None,help='path/ the other ta
 # parser.add_argument('-m','--method',type=str,default='BH',help='to choose the method that judge differential tads in "--diff"')
 parser.add_argument('-o','--out',type=str,default=None,help='the output path')
 parser.add_argument('-l','--limit',type=int,default=30000,help='the range(length of bases) to judge the common boundary')
-parser.add_argument('-k','--kpercent',type=int,default=10,help='the common boundareis are within max(l*bin,k% TAD length)')
+parser.add_argument('-k','--kpercent',type=int,default=10,help='the common boundareis are within max(l*bin,k%% TAD length)')
 parser.add_argument('-r','--remote',type=int,default=1000000,help='the limitation of the biggest region')
 parser.add_argument('-s1','--skip1',type=int,default=0,help='to skip the sth rows in "--diff" file (like 1,2,3')
 parser.add_argument('-s2','--skip2',type=int,default=0,help='to skip the sth rows in the other tadlist file')
