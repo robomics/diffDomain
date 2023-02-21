@@ -272,7 +272,8 @@ def comp2domins_by_twtest(chrn, start, end, reso, hicnorm, fhic0, fhic1, min_nbi
         mat0 = query_contact_matrix(chrn, start, end, reso, fhic0, hicnorm)
         mat1 = query_contact_matrix(chrn, start, end, reso, fhic1, hicnorm)
 
-        if not mat0 is None and not mat1 is None:
+        domname = '%s:%s-%s' % (chrn, start, end)
+        if mat0 is not None and mat1 is not None:
             # rlmove rows that have more than half np.nan
             nbins = compute_nbins(start, end, reso)
             ind0 = np.sum(np.isnan(mat0), axis=0) < nbins * (1-float(f))
@@ -291,19 +292,18 @@ def comp2domins_by_twtest(chrn, start, end, reso, hicnorm, fhic0, fhic1, min_nbi
                 ind1 = np.sum(np.isnan(Diffmat), axis=0)
                 #print ind1
 
-                Diffmatnorm = normDiffbyMeanSD(D=Diffmat)
-                #print Diffmatnorm
+                try:
+                    Diffmatnorm = normDiffbyMeanSD(D=Diffmat)
+                    #print Diffmatnorm
+                    result = twtest_formula(Diffmatnorm)
+                    result = [chrn, start, end, domname, result[1], result[2], result[0]]
+                except ValueError:
+                    result = [chrn, start, end, domname, np.nan, np.nan, np.nan]
 
-                result = twtest_formula(Diffmatnorm)
-
-                domname = '%s:%s-%s' % (chrn, start, end)
-                result = [chrn, start, end, domname, result[1], result[2], result[0]]
             else:
-                domname = '%s:%s-%s' % (chrn, start, end)
                 print('The length of this TAD is too small at this resolution to be calculated !')
                 result = [chrn, start, end, domname, np.nan, np.nan, np.nan]
         else:
-            domname = '%s:%s-%s' % (chrn, start, end)
             result = [chrn, start, end, domname, np.nan, np.nan, np.nan]
             print('The matrix is too spase at this resolution to be calculated !')
 
